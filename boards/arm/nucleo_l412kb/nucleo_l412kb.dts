@@ -36,15 +36,9 @@
 	status = "okay";
 };
 
-&clk_lse {
+&clk_lsi {
 	status = "okay";
-};
-
-&clk_msi {
-	status = "okay";
-	msi-range = <8>;
-	msi-pll-mode;
-	clocks = <&clk_lse>;
+	clock-frequency = <32768>;
 };
 
 &pll {

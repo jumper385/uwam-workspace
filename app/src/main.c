@@ -11,7 +11,7 @@ struct gpio_dt_spec led0 = GPIO_DT_SPEC_GET(DT_ALIAS(led0), gpios);
 
 void cmd_adder_seta_handler(const struct shell *shell, size_t argc, char *argv[]) {
 	long dout = strtol(argv[1], NULL, NULL);
-	LOG_INF("Data: %d", dout);
+	LOG_INF("Data: %ld", dout);
 }
 
 SHELL_STATIC_SUBCMD_SET_CREATE( adder,
