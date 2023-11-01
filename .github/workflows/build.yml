@@ -42,5 +42,5 @@ jobs:
       - name: Archive Firmware
         uses: actions/upload-artifact@v3
         with:
-          name: FW_ARTIFACTS-V${{github.run_number}}.zip
+          name: FW_ARTIFACTS-V${{github.run_number}}
           path: uwam-workspace/app/out
