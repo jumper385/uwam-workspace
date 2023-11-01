@@ -14,7 +14,7 @@ jobs:
     container: zephyrprojectrtos/ci:latest
     strategy:
         matrix:
-          board-name: [nucleo_f446re]
+          targets: [nucleo_f446re, nucleo_l412kb]
     steps:
       - name: Checkout
         uses: actions/checkout@v3
@@ -25,11 +25,12 @@ jobs:
         working-directory: uwam-workspace
         run: |
           west init -l .
-          west update -o=--depth=1 -n
+          west update
       
       - name: Build Firmware
         working-directory: uwam-workspace
         run: |
           ls -a
           cd app
-          west build -b nucleo_f446re
+          ls -a
+          west build -b ${{ matrix.targets }} -p
