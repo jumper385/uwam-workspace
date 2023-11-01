@@ -1,0 +1,17 @@
+identifier: nucleo_l412kb
+name: ST Nucleo L412KB
+type: mcu
+arch: arm
+toolchain:
+  - zephyr
+  - gnuarmemb
+  - xtools
+ram: 40
+flash: 128
+supported:
+  - nvs
+  - pwm
+  - counter
+  - spi
+  - i2c
+  - adc

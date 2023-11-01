@@ -1,0 +1,106 @@
+/*
+ * Copyright (c) 2021 Guðni Már Gilbert
+ *
+ * SPDX-License-Identifier: Apache-2.0
+ */
+
+/dts-v1/;
+#include <st/l4/stm32l412XB.dtsi>
+#include <st/l4/stm32l412kbux-pinctrl.dtsi>
+
+/ {
+	model = "STMicroelectronics STM32L412KB-NUCLEO board";
+	compatible = "st,stm32l412kb-nucleo";
+
+	chosen {
+		zephyr,console = &usart2;
+		zephyr,shell-uart = &usart2;
+		zephyr,sram = &sram0;
+		zephyr,flash = &flash0;
+	};
+
+	leds {
+		compatible = "gpio-leds";
+		green_led: led_0 {
+			gpios = <&gpiob 3 GPIO_ACTIVE_HIGH>;
+			label = "User LD3";
+		};
+	};
+
+	aliases {
+		led0 = &green_led;
+	};
+};
+
+&clk_hsi {
+	status = "okay";
+};
+
+&clk_lse {
+	status = "okay";
+};
+
+&clk_msi {
+	status = "okay";
+	msi-range = <8>;
+	msi-pll-mode;
+	clocks = <&clk_lse>;
+};
+
+&pll {
+	div-m = <1>;
+	mul-n = <10>;
+	div-q = <2>;
+	div-r = <2>;
+	clocks = <&clk_hsi>;
+	status = "okay";
+};
+
+&rcc {
+	clocks = <&pll>;
+	clock-frequency = <DT_FREQ_M(80)>;
+	ahb-prescaler = <1>;
+	apb1-prescaler = <1>;
+	apb2-prescaler = <1>;
+};
+
+&usart2 {
+	status = "okay";
+	pinctrl-0 = <&usart2_tx_pa2 &usart2_rx_pa15>;
+	pinctrl-names = "default";
+	current-speed = <115200>;
+};
+
+&timers2 {
+	status = "okay";
+
+	pwm2: pwm {
+		status = "okay";
+		pinctrl-0 = <&tim2_ch1_pa0>;
+		pinctrl-names = "default";
+	};
+};
+
+&rtc {
+	status = "okay";
+};
+
+&flash0 {
+	partitions {
+		compatible = "fixed-partitions";
+		#address-cells = <1>;
+		#size-cells = <1>;
+
+		/*
+		 * Reserve the final 16 KiB for file system partition
+		 * 128 KiB --> 131702 bytes
+		 * 16 KiB  --> 16384 bytes
+		 * Start Addr = 131702 - 16384 --> (HEX) 0x0001c276
+		 * Size = 16384 --> (HEX) 0x00004000
+		 */
+		storage_partition: partition@1c276 {
+			label = "storage";
+			reg = <0x0001c276 DT_SIZE_K(16)>;
+		};
+	};
+};
