@@ -33,15 +33,14 @@ jobs:
       - name: Build Firmware
         working-directory: uwam-workspace
         run: |
-          ls -a
           cd app
-          ls -a
           west build -b ${{ matrix.target }} -p
           mkdir -p out
+          ls -a
           cp build/zephyr/zephyr.hex ./out/FW_V${{github.run_number}}-${{ matrix.target }}.hex || true
 
       - name: Archive Firmware
         uses: actions/upload-artifact@v3
         with:
           name: FW_ARTIFACTS-V${{github.run_number}}.zip
-          path: release/app/out
+          path: uwam-workspace/app/out
