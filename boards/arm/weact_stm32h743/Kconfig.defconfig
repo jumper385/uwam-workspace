@@ -1,6 +1,0 @@
-if BOARD_WEACT_STM32H743
-
-config BOARD
-    default "weact_stm32h743"
-
-endif

@@ -1,3 +1,0 @@
-config BOARD_WEACT_STM32H743
-    bool "WeAct Studio STM32H743"
-    depends on SOC_STM32H743XX
