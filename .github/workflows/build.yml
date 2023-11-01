@@ -9,82 +9,27 @@ defaults:
     shell: bash
 
 jobs:
-  config:
-    runs-on: ubuntu-latest
-    outputs:
-      ver: ${{ steps.set_version.outputs.ver }}
-    steps:
-      - name: Set ver
-        id: set_version
-        run: |
-          echo ::set-output name=ver::"v1.8.0"
-  init:
-    runs-on: ubuntu-latest
-    needs: [ config ]
-    steps:
-      - name: Initialize
-        run: |
-          sudo apt install zstd
-          pip3 install west
-          echo ${{needs.config.outputs.ver}}
-          mkdir app && cd app
-          west init -m https://github.com/nrfconnect/sdk-nrf --mr ${{needs.config.outputs.ver}}
-          west update
-      - name: Cache
-        uses: actions/cache@v2
-        id: cache-firmware
-        with:
-          path: app
-          key: build-${{ github.sha }}-${{needs.config.outputs.ver}}
-          restore-keys: |
-            build-${{ github.sha }}-${{needs.config.outputs.ver}}
-            build-${{ github.sha }}-
-            build-
   build:
     runs-on: ubuntu-latest
     container: zephyrprojectrtos/ci:latest
-    needs: [ config, init ]
     strategy:
         matrix:
           board-name: [nucleo_f446re]
     steps:
-      - run: |
-          sudo apt install zstd
-      - name: Boot up
-        uses: actions/cache@v2
-        id: cache-firmware
+      - name: Checkout
+        uses: actions/checkout@v3
         with:
-          path: app
-          key: build-${{ github.sha }}-${{needs.config.outputs.ver}}
-      - run: |
-          ls
-          cd app
-          pip3 install west
-          pip3 install -r zephyr/scripts/requirements-base.txt
-          pip3 install ecdsa
-      - name: Build sample
-        working-directory: app
+          path: uwam-workspace
+
+      - name: Initialize
+        working-directory: uwam-workspace
         run: |
-            export ZEPHYR_TOOLCHAIN_VARIANT=gnuarmemb
-            ls
-            cd nrf/samples/bluetooth/mesh/chat
-            west build -b ${{ matrix.board-name }}
-      - name: Cache build
-        uses: actions/cache@v2
-        id: cache-build
-        with:
-          path: nrf/samples/bluetooth/mesh/chat/build
-          key: buildfw-${{ github.sha }}-${{ matrix.board-name }}
-          restore-keys: |
-            buildfw-${{ github.sha }}
-  store:
-    runs-on: ubuntu-latest
-    needs: build
-    steps:
-      - name: Restore build
-        uses: actions/cache@v2
-        id: cache-build
-        with:
-          path: builds
-          key: buildfw-${{ github.sha }}
-          
+          west init -l .
+          west update -o=--depth=1 -n
+      
+      - name: Build Firmware
+        working-directory: uwam-workspace
+        run: |
+          ls -a
+          cd app
+          west build -b nucleo_f446re
