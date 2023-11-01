@@ -12,6 +12,9 @@ jobs:
   build:
     runs-on: ubuntu-latest
     container: zephyrprojectrtos/ci:latest
+    env:
+      CMAKE_PREFIX_PATH: /opt/toolchains
+
     strategy:
         matrix:
           targets: [nucleo_f446re, nucleo_l412kb]
