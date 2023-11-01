@@ -17,7 +17,7 @@ jobs:
 
     strategy:
         matrix:
-          targets: [nucleo_f446re, nucleo_l412kb]
+          target: [nucleo_f446re, nucleo_l412kb]
     steps:
       - name: Checkout
         uses: actions/checkout@v3
@@ -36,4 +36,12 @@ jobs:
           ls -a
           cd app
           ls -a
-          west build -b ${{ matrix.targets }} -p
+          west build -b ${{ matrix.target }} -p
+          mkdir -p out
+          cp build/zephyr/zephyr.hex ./out/FW_V${{github.run_number}}-${{ matrix.target }}.hex || true
+
+      - name: Archive Firmware
+        uses: actions/upload-artifact@v3
+        with:
+          name: FW_ARTIFACTS-V${{github.run_number}}.zip
+          path: release/app/out
