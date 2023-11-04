@@ -107,6 +107,6 @@ void CANTask_thread(struct CANTask *task, void *p2, void *p3)
             k_event_clear(&appTask->events, 0b1U);
         }
 
-        k_msleep(1000);
+        k_yield();
     }
 }
