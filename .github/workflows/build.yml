@@ -17,7 +17,7 @@ jobs:
 
     strategy:
         matrix:
-          target: [nucleo_f446re, nucleo_l412kb]
+          target: [nucleo_f446re]
     steps:
       - name: Checkout
         uses: actions/checkout@v3
