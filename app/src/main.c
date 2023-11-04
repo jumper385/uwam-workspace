@@ -22,6 +22,16 @@ struct CANTask canTask;
 // Thread Memory Instantiations
 K_THREAD_STACK_DEFINE(can_task_data, 2048);
 
+// Setup Timers
+struct k_timer test_can_timer;
+
+void test_can_expiry_fn(struct k_timer *timer)
+{
+	CANTask_emit_test_can1_tx(&canTask);
+}
+
+K_TIMER_DEFINE(test_can_timer, test_can_expiry_fn, NULL);
+
 #define LED0 DT_NODELABEL(DT_ALIAS(led0))
 struct gpio_dt_spec led0 = GPIO_DT_SPEC_GET(DT_ALIAS(led0), gpios);
 
@@ -33,15 +43,18 @@ int main(void)
 
 	// Start Thread Operation
 	canTask.super.tid = k_thread_create(
-	    &canTask.super.thread,
-	    can_task_data, K_THREAD_STACK_SIZEOF(can_task_data),
-	    CANTask_thread, &canTask, NULL, NULL, 2, 0, K_NO_WAIT);
+		&canTask.super.thread,
+		can_task_data, K_THREAD_STACK_SIZEOF(can_task_data),
+		CANTask_thread, &canTask, NULL, NULL, 100, 0, K_NO_WAIT);
+
+	// Setup Timers
+	k_timer_start(&test_can_timer, K_NO_WAIT, K_MSEC(1000));
 
 	// Debug Blinky...
+	gpio_pin_configure_dt(&led0, GPIO_OUTPUT_ACTIVE);
 
 	while (1)
 	{
-		CANTask_emit_test_can1_tx(&canTask);
 		gpio_pin_toggle_dt(&led0);
 		k_msleep(50);
 	}
