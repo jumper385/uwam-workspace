@@ -1,35 +1,41 @@
 / {
     chosen {
-        zephyr,console = &usart3;
-        zephyr,shell-uart = &usart3;
+        zephyr,console = &usb_cdc;
+        zephyr,shell-uart = &usb_cdc;
         zephyr,canbus = &can1;
     };
 };
 
 &usart3 {
-	pinctrl-0 = <&usart3_rx_pc11 &usart3_tx_pc10>;
-	pinctrl-names = "default";
-	current-speed = <115200>;
-	status = "okay";
+    pinctrl-0 = <&usart3_rx_pc11 &usart3_tx_pc10>;
+    pinctrl-names = "default";
+    current-speed = <115200>;
+    status = "okay";
 };
 
 &clk_hse {
-    status="disabled";
+    status = "disabled";
 };
 
-&usbotg_fs {
+&usbotg_hs {
     pinctrl-0 = <&usb_otg_hs_dp_pb15 &usb_otg_hs_dm_pb14>;
     pinctrl-names = "default";
+    status = "okay";
+    usb_cdc: cdc-acm-uart {
+        compatible = "zephyr,cdc-acm-uart";
+        status = "okay";
+        label = "CDC_ACM_0";
+    };
 };
 
 
 &clk_hsi {
-    status="okay"; 
-    clock-frequency = < DT_FREQ_M(16) >;
+    status = "okay";
+    clock-frequency = <DT_FREQ_M(16)>;
 };
 
 &pll {
-    clocks = < &clk_hsi >;
+    clocks = <&clk_hsi>;
     div-m = <16>;
 };
 
@@ -39,10 +45,10 @@
 
 &can1 {
     pinctrl-0 = <&can1_tx_pa12 &can1_rx_pa11>;
-    status="okay";
+    status = "okay";
 };
 
 &can2 {
     pinctrl-0 = <&can2_tx_pb13 &can2_rx_pb12>;
-    status="okay";
+    status = "okay";
 };
