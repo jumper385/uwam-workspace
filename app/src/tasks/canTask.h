@@ -21,5 +21,6 @@ struct CANTask
 void CANTask_init(struct CANTask *task);
 void CANTask_thread(struct CANTask *task, void *p2, void *p3);
 int CANTask_emit_test_can1_tx(struct CANTask *task);
+int CANTask_emit_test_can2_tx(struct CANTask *task);
 
 #endif

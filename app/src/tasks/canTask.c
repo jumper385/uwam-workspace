@@ -1,7 +1,6 @@
 #include "canTask.h"
 
 LOG_MODULE_REGISTER(can);
-CAN_MSGQ_DEFINE(canq_test, 10);
 
 void CANTask_init(struct CANTask *task)
 {
@@ -10,7 +9,7 @@ void CANTask_init(struct CANTask *task)
     task->can1 = DEVICE_DT_GET(DT_NODELABEL(can1));
     task->can2 = DEVICE_DT_GET(DT_NODELABEL(can2));
 
-    int ret = can_set_mode(task->can1, CAN_MODE_LOOPBACK);
+    int ret = can_set_mode(task->can1, CAN_MODE_NORMAL);
     if (ret < 0)
     {
         LOG_ERR("can_set_mode() failed for can1: %d", ret);
@@ -28,7 +27,7 @@ void CANTask_init(struct CANTask *task)
         LOG_INF("CAN Bus 1 Started...");
     }
 
-    ret = can_set_mode(task->can2, CAN_MODE_LOOPBACK);
+    ret = can_set_mode(task->can2, CAN_MODE_NORMAL);
     if (ret < 0)
     {
         LOG_ERR("can_set_mode() failed for can2: %d", ret);
@@ -58,6 +57,12 @@ int CANTask_emit_test_can1_tx(struct CANTask *task)
     return err;
 }
 
+int CANTask_emit_test_can2_tx(struct CANTask *task)
+{
+    int err = k_event_post(&task->super.events, 0b10U);
+    return err;
+}
+
 /**
  * OPERATOR FUNCTIONS
  * These events act on emitted events form external access functions to
@@ -78,6 +83,23 @@ int CANTask_operate_test_can1_tx(struct CANTask *task)
     return ret;
 }
 
+int CANTask_operate_test_can2_tx(struct CANTask *task)
+{
+    struct can_frame frame =
+        {
+            .data = {0x3f, 0x8e},
+            .id = 0xde,
+            .dlc = 2,
+        };
+
+    LOG_INF("Sending CAN2 TX");
+
+    int ret = can_send(task->can2, &frame, K_NO_WAIT, NULL, NULL);
+    return ret;
+}
+
+// Thread Definition
+
 void CANTask_thread(struct CANTask *task, void *p2, void *p3)
 {
     struct AppTask *appTask = (struct AppTask *)task;
@@ -87,14 +109,7 @@ void CANTask_thread(struct CANTask *task, void *p2, void *p3)
 
     int ret;
 
-    const struct can_filter filter = {
-        .flags = CAN_FILTER_DATA | CAN_FILTER_IDE,
-        .id = 0xdd,
-        .mask = CAN_EXT_ID_MASK,
-    };
-
-    struct can_frame frame;
-    int filter_id = can_add_rx_filter_msgq(task->can1, &canq_test, &filter);
+    LOG_INF("CAN Thread Loop Started...");
 
     for (;;)
     {
@@ -105,6 +120,12 @@ void CANTask_thread(struct CANTask *task, void *p2, void *p3)
         {
             ret = CANTask_operate_test_can1_tx(task);
             k_event_clear(&appTask->events, 0b1U);
+        }
+
+        if ((0b10U == (0b10u & event)) != 0U)
+        {
+            ret = CANTask_operate_test_can2_tx(task);
+            k_event_clear(&appTask->events, 0b10U);
         }
 
         k_yield();

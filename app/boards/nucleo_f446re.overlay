@@ -1,8 +1,22 @@
 / {
     chosen {
-        zephyr,console = &usb_cdc;
-        zephyr,shell-uart = &usb_cdc;
+        zephyr,console = &usart3;
+        zephyr,shell-uart = &usart3;
         zephyr,canbus = &can1;
+    };
+    leds {
+        rgb_red: rgb_red {
+            gpios = <&gpioa 8 GPIO_ACTIVE_LOW>;
+            label = "LED Red";
+        };
+        rgb_blue: rgb_blue {
+            gpios = <&gpioa 10 GPIO_ACTIVE_LOW>;
+            label = "LED Blue";
+        };
+        rgb_green: rgb_green {
+            gpios = <&gpioa 9 GPIO_ACTIVE_LOW>;
+            label = "LED Green";
+        };
     };
 };
 
@@ -28,7 +42,6 @@
     };
 };
 
-
 &clk_hsi {
     status = "okay";
     clock-frequency = <DT_FREQ_M(16)>;
@@ -40,7 +53,7 @@
 };
 
 &green_led_2 {
-    gpios = <&gpioc 13 GPIO_ACTIVE_LOW>;
+    gpios = <&gpioc 13 GPIO_ACTIVE_HIGH>;
 };
 
 &can1 {
