@@ -86,7 +86,7 @@ int CANTask_operate_test_can1_tx(struct CANTask *task)
         frame.data[i] = sys_rand32_get();
     }
 
-    LOG_INF("Sending %d CAN1 TX \n", tx_length);
+    LOG_INF("Sending %d CAN1 TX", tx_length);
 
     int ret = can_send(task->can1, &frame, K_NO_WAIT, NULL, NULL);
     return ret;
@@ -94,7 +94,6 @@ int CANTask_operate_test_can1_tx(struct CANTask *task)
 
 int CANTask_operate_test_can2_tx(struct CANTask *task)
 {
-    int out = sys_rand32_get();
     struct can_frame frame =
         {
             .data = {0x3f, 0x8e},
@@ -135,8 +134,9 @@ void CANTask_thread(struct CANTask *task, void *p2, void *p3)
         if (ret == 0)
         {
             LOG_INF("CAN2 Received Data (ID: 0x%x): %d", frame.id, frame.dlc);
-            LOG_INF("CAN2 Received Data %d Bytes from CAN-ID: 0x%x", frame.dlc, frame.id);
-            LOG_HEXDUMP_INF(frame.data, sizeof(frame.data), "CAN Data");
+            LOG_INF("CAN2 Received Data %d Bytes from CAN-ID: 0x%x",
+                    frame.dlc, frame.id);
+            LOG_HEXDUMP_INF(frame.data, frame.dlc, "CAN1 Data Receive Array");
         }
 
         int event = k_event_wait(&appTask->events, 0b111U, false, K_NO_WAIT);
