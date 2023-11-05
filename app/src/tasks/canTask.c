@@ -1,6 +1,8 @@
 #include "canTask.h"
 
 LOG_MODULE_REGISTER(can);
+CAN_MSGQ_DEFINE(can1q, 2);
+CAN_MSGQ_DEFINE(can2q, 2);
 
 void CANTask_init(struct CANTask *task)
 {
@@ -111,8 +113,24 @@ void CANTask_thread(struct CANTask *task, void *p2, void *p3)
 
     LOG_INF("CAN Thread Loop Started...");
 
+    const struct can_filter filter = {
+        .flags = CAN_FILTER_DISABLE,
+    };
+
+    struct can_frame frame;
+    int filter_id = can_add_rx_filter_msgq(task->can2, &can2q, &filter);
+
     for (;;)
     {
+
+        int ret = k_msgq_get(&can2q, &frame, K_NO_WAIT);
+
+        if (ret == 0)
+        {
+            LOG_INF("CAN ID: %x", frame.id);
+            LOG_INF("Data Length: %d", frame.dlc);
+            LOG_INF("Data[]: %x, %x", frame.data[0], frame.data[1]);
+        }
 
         int event = k_event_wait(&appTask->events, 0b111U, false, K_NO_WAIT);
 

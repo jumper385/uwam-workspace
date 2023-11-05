@@ -21,15 +21,11 @@ struct k_timer red_led_timer;
 struct k_timer green_led_timer;
 struct k_timer blue_led_timer;
 
-CAN_MSGQ_DEFINE(can1q, 2);
-CAN_MSGQ_DEFINE(can2q, 2);
-
 void test_can_expiry_fn(struct k_timer *timer)
 {
 	CANTask_emit_test_can1_tx(&canTask);
 	CANTask_emit_test_can2_tx(&canTask);
 }
-
 void red_led_expiry_fn(struct k_timer *timer)
 {
 	gpio_pin_toggle_dt(&rgb_red);
@@ -74,21 +70,8 @@ int main(void)
 	gpio_pin_configure_dt(&rgb_green, GPIO_OUTPUT_ACTIVE);
 	gpio_pin_configure_dt(&rgb_blue, GPIO_OUTPUT_ACTIVE);
 
-	const struct can_filter filter = {
-		.flags = CAN_FILTER_DATA | CAN_FILTER_IDE,
-		.id = 0xdd,
-	};
-
-	struct can_frame frame;
-	int filter_id = can_add_rx_filter_msgq(canTask.can2, &can2q, &filter);
-
 	while (1)
 	{
-
-		int ret = k_msgq_get(&can2q, &frame, K_NO_WAIT);
-
-		LOG_INF("%d", frame.dlc);
-
 		gpio_pin_toggle_dt(&led0);
 		k_msleep(50);
 	}
