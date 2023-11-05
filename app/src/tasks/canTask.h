@@ -8,6 +8,7 @@
 #include <zephyr/net/canbus.h>
 #include <zephyr/drivers/can.h>
 #include <zephyr/logging/log.h>
+#include <zephyr/crypto/crypto.h>
 
 #include "appTask.h"
 
