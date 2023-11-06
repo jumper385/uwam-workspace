@@ -94,12 +94,18 @@ int CANTask_operate_test_can1_tx(struct CANTask *task)
 
 int CANTask_operate_test_can2_tx(struct CANTask *task)
 {
+    uint8_t tx_length = sys_rand32_get() >> 29;
+
     struct can_frame frame =
         {
-            .data = {0x3f, 0x8e},
-            .id = 0xde,
-            .dlc = 2,
+            .id = sys_rand32_get(),
+            .dlc = tx_length,
         };
+
+    for (int i = 0; i < tx_length; i++)
+    {
+        frame.data[i] = sys_rand32_get();
+    }
 
     LOG_INF("Sending CAN2 TX");
 
