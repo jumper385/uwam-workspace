@@ -74,7 +74,7 @@ int CANTask_emit_test_can2_tx(struct CANTask *task)
 int CANTask_operate_test_can1_tx(struct CANTask *task)
 {
     uint8_t tx_length = sys_rand32_get() >> 29;
-    uint32_t id = sys_rand32_get() >> 27;
+    uint32_t id = sys_rand32_get() >> 29;
 
     struct can_frame frame =
         {
@@ -94,7 +94,7 @@ int CANTask_operate_test_can1_tx(struct CANTask *task)
 int CANTask_operate_test_can2_tx(struct CANTask *task)
 {
     uint8_t tx_length = sys_rand32_get() >> 29;
-    uint32_t id = sys_rand32_get() >> 27;
+    uint32_t id = sys_rand32_get() >> 29;
 
     struct can_frame frame =
         {
@@ -107,7 +107,7 @@ int CANTask_operate_test_can2_tx(struct CANTask *task)
         frame.data[i] = sys_rand32_get();
     }
 
-    int ret = can_send(task->can1, &frame, K_NO_WAIT, NULL, NULL);
+    int ret = can_send(task->can2, &frame, K_NO_WAIT, NULL, NULL);
     return ret;
 }
 
@@ -123,21 +123,36 @@ void CANTask_thread(struct CANTask *task, void *p2, void *p3)
         .flags = CAN_FILTER_DISABLE,
     };
 
-    struct can_frame frame;
-    int filter_id = can_add_rx_filter_msgq(task->can2, &can2q, &filter);
+    struct can_frame frame_can1, frame_can2;
+
+    can_add_rx_filter_msgq(task->can2, &can2q, &filter);
+    can_add_rx_filter_msgq(task->can1, &can1q, &filter);
 
     for (;;)
     {
 
-        int ret = k_msgq_get(&can2q, &frame, K_NO_WAIT);
+        int ret;
+        ret = k_msgq_get(&can2q, &frame_can2, K_NO_WAIT);
 
         if (ret == 0)
         {
-            int err = CANTask_probe_update_state(&task->can2_probe, &frame);
+            int err = CANTask_probe_update_state(&task->can2_probe, &frame_can2);
 
             if (err == -CANPROBE_MAX_ID_REACHED)
             {
                 LOG_ERR("CAN2_PROBE FULL (Only %d IDs Allowed)", MAX_IDS);
+            }
+        }
+
+        ret = k_msgq_get(&can1q, &frame_can1, K_NO_WAIT);
+
+        if (ret == 0)
+        {
+            int err = CANTask_probe_update_state(&task->can1_probe, &frame_can1);
+
+            if (err == -CANPROBE_MAX_ID_REACHED)
+            {
+                LOG_ERR("CAN1_PROBE FULL (Only %d IDs Allowed)", MAX_IDS);
             }
         }
 
