@@ -5,7 +5,7 @@
 #include <zephyr/drivers/can.h>
 
 // Hardcode Codes First
-#define MAX_IDS 100
+#define MAX_IDS 9
 
 // ERROR STATE DEFINITIONS
 #define CANPROBE_MAX_ID_REACHED 30

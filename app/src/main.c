@@ -23,6 +23,7 @@ struct k_timer blue_led_timer;
 void test_can_expiry_fn(struct k_timer *timer)
 {
 	CANTask_emit_test_can1_tx(&canTask);
+	CANTask_emit_test_can2_tx(&canTask);
 }
 
 void red_led_expiry_fn(struct k_timer *timer)
