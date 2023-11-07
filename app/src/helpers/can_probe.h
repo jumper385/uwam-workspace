@@ -17,9 +17,6 @@ struct CANTask_rx_probe
     int idx;
 };
 
-int CANTask_probe_append_canid(struct CANTask_rx_probe *probe, struct can_frame *frame);
-int CANTask_probe_update_canid(struct CANTask_rx_probe *probe, struct can_frame *frame, int idx);
-int CANTask_probe_find_canid(struct CANTask_rx_probe *probe, int canid);
 int CANTask_probe_update_state(struct CANTask_rx_probe *probe, struct can_frame *frame);
 
 #endif
