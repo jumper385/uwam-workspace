@@ -13,4 +13,6 @@ target_sources(app PRIVATE
     src/main.c
     src/tasks/appTask.c
     src/tasks/canTask.c
+
+    src/helpers/can_probe.c
 )

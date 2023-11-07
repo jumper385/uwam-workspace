@@ -1,6 +1,8 @@
 #ifndef _CAN_TASK_H_
 #define _CAN_TASK_H_
 
+#define MAX_IDS 10
+
 #include <zephyr/device.h>
 #include <zephyr/drivers/gpio.h>
 #include <zephyr/kernel.h>
@@ -11,12 +13,14 @@
 #include <zephyr/crypto/crypto.h>
 
 #include "appTask.h"
+#include "../helpers/can_probe.h"
 
 struct CANTask
 {
     struct AppTask super;
     struct device *can1, *can2;
     struct can_frame tx_frame;
+    struct CANTask_rx_Probe can1_probe, can2_probe;
 };
 
 void CANTask_init(struct CANTask *task);

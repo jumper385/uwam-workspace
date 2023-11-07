@@ -74,10 +74,11 @@ int CANTask_emit_test_can2_tx(struct CANTask *task)
 int CANTask_operate_test_can1_tx(struct CANTask *task)
 {
     uint8_t tx_length = sys_rand32_get() >> 29;
+    uint32_t id = sys_rand32_get() >> 27;
 
     struct can_frame frame =
         {
-            .id = sys_rand32_get(),
+            .id = id,
             .dlc = tx_length,
         };
 
@@ -85,8 +86,6 @@ int CANTask_operate_test_can1_tx(struct CANTask *task)
     {
         frame.data[i] = sys_rand32_get();
     }
-
-    LOG_INF("Sending %d CAN1 TX", tx_length);
 
     int ret = can_send(task->can1, &frame, K_NO_WAIT, NULL, NULL);
     return ret;
@@ -95,10 +94,11 @@ int CANTask_operate_test_can1_tx(struct CANTask *task)
 int CANTask_operate_test_can2_tx(struct CANTask *task)
 {
     uint8_t tx_length = sys_rand32_get() >> 29;
+    uint32_t id = sys_rand32_get() >> 27;
 
     struct can_frame frame =
         {
-            .id = sys_rand32_get(),
+            .id = id,
             .dlc = tx_length,
         };
 
@@ -107,9 +107,7 @@ int CANTask_operate_test_can2_tx(struct CANTask *task)
         frame.data[i] = sys_rand32_get();
     }
 
-    LOG_INF("Sending CAN2 TX");
-
-    int ret = can_send(task->can2, &frame, K_NO_WAIT, NULL, NULL);
+    int ret = can_send(task->can1, &frame, K_NO_WAIT, NULL, NULL);
     return ret;
 }
 
@@ -119,11 +117,7 @@ void CANTask_thread(struct CANTask *task, void *p2, void *p3)
     struct AppTask *appTask = (struct AppTask *)task;
     int event = k_event_wait(&appTask->events, 0b111U, false, K_NO_WAIT);
 
-    LOG_INF("CAN Thread Ready...");
-
     int ret;
-
-    LOG_INF("CAN Thread Loop Started...");
 
     const struct can_filter filter = {
         .flags = CAN_FILTER_DISABLE,
@@ -139,10 +133,12 @@ void CANTask_thread(struct CANTask *task, void *p2, void *p3)
 
         if (ret == 0)
         {
-            LOG_INF("CAN2 Received Data (ID: 0x%x): %d", frame.id, frame.dlc);
-            LOG_INF("CAN2 Received Data %d Bytes from CAN-ID: 0x%x",
-                    frame.dlc, frame.id);
-            LOG_HEXDUMP_INF(frame.data, frame.dlc, "CAN1 Data Receive Array");
+            int err = CANTask_probe_update_state(&task->can2_probe, &frame);
+
+            if (err == -CANPROBE_MAX_ID_REACHED)
+            {
+                LOG_ERR("CAN2_PROBE FULL (Only %d IDs Allowed)", MAX_IDS);
+            }
         }
 
         int event = k_event_wait(&appTask->events, 0b111U, false, K_NO_WAIT);

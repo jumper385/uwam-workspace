@@ -1,6 +1,5 @@
 #include <zephyr/kernel.h>
 #include "./tasks/canTask.h"
-
 LOG_MODULE_REGISTER(main);
 
 // Setup Blinky...
@@ -59,7 +58,7 @@ int main(void)
 		CANTask_thread, &canTask, NULL, NULL, 100, 0, K_NO_WAIT);
 
 	// Setup Timers
-	k_timer_start(&test_can_timer, K_NO_WAIT, K_MSEC(1000));
+	k_timer_start(&test_can_timer, K_NO_WAIT, K_MSEC(250));
 	k_timer_start(&red_led_timer, K_NO_WAIT, K_MSEC(325));
 	k_timer_start(&green_led_timer, K_NO_WAIT, K_MSEC(350));
 	k_timer_start(&blue_led_timer, K_NO_WAIT, K_MSEC(300));
