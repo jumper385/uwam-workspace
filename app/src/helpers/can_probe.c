@@ -45,7 +45,7 @@ int CANTask_probe_update_canid(struct CANTask_rx_Probe *probe, struct can_frame 
  * @param canid The CAN ID to find.
  * @return int Index of the found CAN ID; -1 if not found.
  */
-int CANTask_probe_findid(struct CANTask_rx_Probe *probe, int canid)
+int CANTask_probe_find_canid(struct CANTask_rx_Probe *probe, int canid)
 {
     /**
      * Checks if the ID array has an ID match
@@ -74,7 +74,7 @@ int CANTask_probe_findid(struct CANTask_rx_Probe *probe, int canid)
 int CANTask_probe_update_state(struct CANTask_rx_Probe *probe, struct can_frame *frame)
 {
 
-    int id = CANTask_probe_findid(probe, frame->id);
+    int id = CANTask_probe_find_canid(probe, frame->id);
 
     if (id < 0)
     {
