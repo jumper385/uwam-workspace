@@ -20,7 +20,7 @@ struct CANTask
     struct AppTask super;
     struct device *can1, *can2;
     struct can_frame tx_frame;
-    struct CANTask_rx_Probe can1_probe, can2_probe;
+    struct CANTask_rx_probe can1_probe, can2_probe;
 };
 
 void CANTask_init(struct CANTask *task);
