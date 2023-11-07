@@ -1,7 +1,7 @@
 / {
     chosen {
-        zephyr,console = &usb_cdc;
-        zephyr,shell-uart = &usb_cdc;
+        zephyr,console = &usart3;
+        zephyr,shell-uart = &usart3;
         zephyr,canbus = &can1;
     };
     leds {
