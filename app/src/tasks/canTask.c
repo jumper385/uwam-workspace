@@ -103,10 +103,16 @@ int CANTask_operate_test_can2_tx(struct CANTask *task)
             .dlc = tx_length,
         };
 
-    for (int i = 0; i < tx_length; i++)
-    {
-        frame.data[i] = sys_rand32_get();
-    }
+    frame.dlc = 8;
+
+    frame.data[7] = 0x40;
+    frame.data[6] = sys_rand32_get() >> 24;
+    frame.data[5] = sys_rand32_get() >> 24;
+    frame.data[4] = sys_rand32_get() >> 24;
+    frame.data[3] = sys_rand32_get() >> 24;
+    frame.data[2] = sys_rand32_get() >> 24;
+    frame.data[1] = sys_rand32_get() >> 24;
+    frame.data[0] = sys_rand32_get() >> 24;
 
     int ret = can_send(task->can2, &frame, K_NO_WAIT, NULL, NULL);
 
