@@ -74,7 +74,7 @@ int CANTask_emit_test_can2_tx(struct CANTask *task)
 int CANTask_operate_test_can1_tx(struct CANTask *task)
 {
     uint8_t tx_length = sys_rand32_get() >> 29;
-    uint32_t id = sys_rand32_get() >> 29;
+    uint32_t id = sys_rand32_get() >> 25;
 
     struct can_frame frame =
         {
@@ -88,13 +88,14 @@ int CANTask_operate_test_can1_tx(struct CANTask *task)
     }
 
     int ret = can_send(task->can1, &frame, K_NO_WAIT, NULL, NULL);
+
     return ret;
 }
 
 int CANTask_operate_test_can2_tx(struct CANTask *task)
 {
     uint8_t tx_length = sys_rand32_get() >> 29;
-    uint32_t id = sys_rand32_get() >> 29;
+    uint32_t id = sys_rand32_get() >> 25;
 
     struct can_frame frame =
         {
@@ -108,6 +109,7 @@ int CANTask_operate_test_can2_tx(struct CANTask *task)
     }
 
     int ret = can_send(task->can2, &frame, K_NO_WAIT, NULL, NULL);
+
     return ret;
 }
 

@@ -1,5 +1,13 @@
 #include "can_probe.h"
 
+int CANTask_probe_init(struct CANTask_rx_probe *probe)
+{
+    for (int i = 0; i < MAX_IDS; i++)
+    {
+        probe->dtypes->type = TYPE_UINT;
+    }
+}
+
 /**
  * Appends a CAN ID to the probe's list of IDs if there is space.
  * It also stores the corresponding data from the CAN frame.
@@ -89,4 +97,9 @@ int CANTask_probe_update_state(struct CANTask_rx_probe *probe, struct can_frame 
         CANTask_probe_update_canid(probe, frame, id);
         return 0;
     }
+}
+
+int CANTask_probe_register_id(struct CANTask_rx_probe *probe, uint32_t id, enum ValueType dtype)
+{
+    probe->dtypes[id].type = dtype;
 }
