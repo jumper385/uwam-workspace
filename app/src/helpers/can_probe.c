@@ -99,7 +99,14 @@ int CANTask_probe_update_state(struct CANTask_rx_probe *probe, struct can_frame 
     }
 }
 
-int CANTask_probe_register_id(struct CANTask_rx_probe *probe, uint32_t id, enum ValueType dtype)
+int CANTask_probe_register_id(struct CANTask_rx_probe *probe, uint32_t id, enum CAN_DTypes dtype)
 {
     probe->dtypes[id].type = dtype;
+}
+
+float CANTask_probe_id_get_float(struct CANTask_rx_probe *probe, uint32_t id)
+{
+    union CAN_Data_Union buff;
+    buff.u64 = probe->data[id];
+    return buff.f[0];
 }

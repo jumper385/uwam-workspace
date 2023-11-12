@@ -5,6 +5,7 @@
 
 #include "./tasks/canTask.h"
 #include "./helpers/can_probe.h"
+
 LOG_MODULE_REGISTER(main);
 
 // Setup Blinky...
@@ -52,7 +53,7 @@ void shellcmd_cantask_listids(const struct shell *shell, size_t argc, char *argv
 		shell_print(shell, "CAN1 COLLECTED %d IDs", canTask.can1_probe.idx);
 		for (int i = 0; i < canTask.can1_probe.idx; i++)
 		{
-			shell_print(shell, "ID: %x - %x", canTask.can1_probe.ids[i], canTask.can1_probe.data[i]);
+			shell_print(shell, "ID: %x - %.2f", canTask.can1_probe.ids[i], CANTask_probe_id_get_float(&canTask.can1_probe, i));
 		}
 	}
 	else if (strcmp(dest, "can2") == 0)

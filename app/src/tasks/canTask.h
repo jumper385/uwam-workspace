@@ -15,8 +15,6 @@
 #include "appTask.h"
 #include "../helpers/can_probe.h"
 
-
-
 struct CANTask
 {
     struct AppTask super;
