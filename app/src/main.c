@@ -53,7 +53,16 @@ void shellcmd_cantask_listids(const struct shell *shell, size_t argc, char *argv
 		shell_print(shell, "CAN1 COLLECTED %d IDs", canTask.can1_probe.idx);
 		for (int i = 0; i < canTask.can1_probe.idx; i++)
 		{
-			shell_print(shell, "ID: %x - %.2f", canTask.can1_probe.ids[i], CANTask_probe_id_get_float(&canTask.can1_probe, i));
+			switch (canTask.can1_probe.dtypes[i].type)
+			{
+			case TYPE_DOUBLE:
+				shell_print(shell, "ID: %x - %.2f", canTask.can1_probe.ids[i], CANTask_probe_id_get_float(&canTask.can1_probe, i));
+				break;
+
+			default:
+				shell_print(shell, "ID: %x - %x", canTask.can1_probe.ids[i], CANTask_probe_id_get_u64(&canTask.can1_probe, i));
+				break;
+			}
 		}
 	}
 	else if (strcmp(dest, "can2") == 0)

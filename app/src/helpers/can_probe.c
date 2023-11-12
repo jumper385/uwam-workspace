@@ -108,5 +108,12 @@ float CANTask_probe_id_get_float(struct CANTask_rx_probe *probe, uint32_t id)
 {
     union CAN_Data_Union buff;
     buff.u64 = probe->data[id];
-    return buff.f[0];
+    return buff.d;
+}
+
+uint64_t CANTask_probe_id_get_u64(struct CANTask_rx_probe *probe, uint32_t id)
+{
+    union CAN_Data_Union buff;
+    buff.u64 = probe->data[id];
+    return buff.u64;
 }
