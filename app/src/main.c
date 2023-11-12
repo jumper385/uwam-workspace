@@ -44,7 +44,7 @@ void shellcmd_cantask_idcnt(const struct shell *shell, size_t argc, char *argv[]
 	}
 }
 
-void shellcmd_cantask_listids(const struct shell *shell, size_t argc, char *argv[])
+void shellcmd_cantask_ls_ids(const struct shell *shell, size_t argc, char *argv[])
 {
 	char dest[40] = "";
 	strcpy(dest, argv[1]);
@@ -56,11 +56,11 @@ void shellcmd_cantask_listids(const struct shell *shell, size_t argc, char *argv
 			switch (canTask.can1_probe.dtypes[i].type)
 			{
 			case TYPE_DOUBLE:
-				shell_print(shell, "ID: %x - %.2f", canTask.can1_probe.ids[i], CANTask_probe_id_get_float(&canTask.can1_probe, i));
+				shell_print(shell, "ID [DOUBLE]: %x - %.2f", canTask.can1_probe.ids[i], CANTask_probe_id_get_float(&canTask.can1_probe, i));
 				break;
 
 			default:
-				shell_print(shell, "ID: %x - %x", canTask.can1_probe.ids[i], CANTask_probe_id_get_u64(&canTask.can1_probe, i));
+				shell_print(shell, "ID [UINT64]: %x - %x", canTask.can1_probe.ids[i], CANTask_probe_id_get_u64(&canTask.can1_probe, i));
 				break;
 			}
 		}
@@ -80,12 +80,12 @@ void shellcmd_cantask_listids(const struct shell *shell, size_t argc, char *argv
 }
 
 SHELL_STATIC_SUBCMD_SET_CREATE(candbg,
-							   SHELL_CMD_ARG(idcnt, NULL,
+							   SHELL_CMD_ARG(cnt_ids, NULL,
 											 "Show the number of unique ID's detected by the device",
 											 shellcmd_cantask_idcnt, 2, NULL),
-							   SHELL_CMD_ARG(listids, NULL,
+							   SHELL_CMD_ARG(ls_ids, NULL,
 											 "Show a full list of ID's for the specified can channel",
-											 shellcmd_cantask_listids, 2, NULL),
+											 shellcmd_cantask_ls_ids, 2, NULL),
 							   SHELL_SUBCMD_SET_END);
 
 SHELL_CMD_REGISTER(candbg, &candbg, "CAN Debugger", NULL);

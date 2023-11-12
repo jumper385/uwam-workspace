@@ -136,6 +136,9 @@ void CANTask_thread(struct CANTask *task, void *p2, void *p3)
     can_add_rx_filter_msgq(task->can2, &can2q, &filter);
     can_add_rx_filter_msgq(task->can1, &can1q, &filter);
 
+    CANTask_probe_init(&task->can1_probe);
+    CANTask_probe_init(&task->can2_probe);
+
     for (;;)
     {
 
