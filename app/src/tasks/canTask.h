@@ -21,6 +21,7 @@ struct CANTask
     struct device *can1, *can2;
     struct can_frame tx_frame;
     struct CANTask_rx_probe can1_probe, can2_probe;
+    struct CANProbe_probe canprobe1;
 };
 
 void CANTask_init(struct CANTask *task);

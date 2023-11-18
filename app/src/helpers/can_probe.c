@@ -90,3 +90,81 @@ int CANTask_probe_update_state(struct CANTask_rx_probe *probe, struct can_frame 
         return 0;
     }
 }
+
+int CANProbe_init(struct CANProbe_probe *canid)
+{
+    canid->canid = NULL;
+    canid->start = NULL;
+    canid->end = NULL;
+    canid->cnt = 0;
+    return 0;
+}
+
+int CANProbe_node_id_exists(struct CANProbe_probe *canid, uint16_t id)
+{
+    if (canid->start == NULL)
+    {
+        return -CANPROBE_ERROR_LL_EMPTY; // List is empty
+    }
+
+    struct CANProbe_node *current = canid->start;
+    for (int i = 0; i < canid->cnt; i++)
+    {
+        if (current->id == id)
+        {
+            return 0; // ID found
+        }
+        printk("ID[%d]: %d\n", i, current->id);
+        current = current->next;
+    }
+
+    return -CAN_PROBE_LL_ID_NOT_PRESENT; // ID not found
+}
+
+// add node
+int CANProbe_insert_node(struct CANProbe_probe *canid, struct can_frame *frame)
+{
+    int ret = CANProbe_node_id_exists(canid, frame->id);
+
+    // check if head is null...
+    struct CANProbe_node *new;
+    // if list is empty
+    if (canid->start == NULL)
+    {
+        // create the new node
+        new = k_malloc(sizeof(struct CANProbe_node));
+        if (new == NULL)
+        {
+            return -CANPROBE_ERROR_LL_INSERT_ERROR;
+        }
+        memcpy(&new->data, &frame->data, sizeof(uint64_t));
+        new->id = frame->id;
+
+        new->next = NULL;
+        canid->start = new;
+        canid->end = new;
+    }
+    else
+    {
+        new = k_malloc(sizeof(struct CANProbe_node));
+        if (new == NULL)
+        {
+            return -CANPROBE_ERROR_LL_INSERT_ERROR;
+        }
+        memcpy(&new->data, &frame->data, sizeof(uint64_t));
+        new->id = frame->id;
+
+        new->next = canid->start;
+        canid->start = new;
+    }
+
+    canid->cnt++;
+
+    return 0;
+}
+
+//  find node with id
+//  remove node
+//  insert node into arb. position in list
+//  remove node in arb. position in list
+//  pop last node

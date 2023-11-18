@@ -124,6 +124,7 @@ void CANTask_thread(struct CANTask *task, void *p2, void *p3)
     };
 
     struct can_frame frame_can1, frame_can2;
+    CANProbe_init(&task->canprobe1);
 
     can_add_rx_filter_msgq(task->can2, &can2q, &filter);
     can_add_rx_filter_msgq(task->can1, &can1q, &filter);
@@ -141,6 +142,17 @@ void CANTask_thread(struct CANTask *task, void *p2, void *p3)
             if (err == -CANPROBE_MAX_ID_REACHED)
             {
                 LOG_ERR("CAN2_PROBE FULL (Only %d IDs Allowed)", MAX_IDS);
+            }
+
+            err = CANProbe_insert_node(&task->canprobe1, &frame_can1);
+
+            if (err != 0)
+            {
+                LOG_ERR("CANProbe_insert_node failed on can2 %d", err);
+            }
+            else
+            {
+                LOG_INF("CANProbe_insert_node worked on can2");
             }
         }
 
