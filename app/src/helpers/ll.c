@@ -1,4 +1,6 @@
 #include "ll.h"
+#include <zephyr/logging/log.h>
+LOG_MODULE_REGISTER(ll);
 
 void ll_obj_init(struct ll_obj *list) {
     list->head = NULL;
@@ -35,11 +37,11 @@ void ll_obj_append(struct ll_obj *list, int data) {
 }
 
 void ll_print(struct ll_node *node) {
-    printf("%d", node->data);
+    printk("%d", node->data);
     if (node->next == NULL) {
-        printf("\n");
+        printk("\n");
     } else {
-        printf(",");
+        printk(",");
         ll_print(node->next);
     }
 }

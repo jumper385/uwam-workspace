@@ -15,4 +15,5 @@ target_sources(app PRIVATE
     src/tasks/canTask.c
 
     src/helpers/ll.c
+    src/helpers/bst.c
 )

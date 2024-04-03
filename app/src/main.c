@@ -14,7 +14,7 @@ struct gpio_dt_spec rgb_blue = GPIO_DT_SPEC_GET(DT_NODELABEL(rgb_blue), gpios);
 struct CANTask canTask;
 
 // Thread Memory Instantiations
-K_THREAD_STACK_DEFINE(can_task_data, 2048);
+K_THREAD_STACK_DEFINE(can_task_data, 4096);
 
 // Setup Timers
 struct k_timer test_can_timer;

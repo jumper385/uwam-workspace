@@ -22,7 +22,7 @@ void CANTask_init(struct CANTask *task)
     }
 
     ret = can_start(task->can1);
-    if (ret != 0)
+            if (ret != 0)
     {
         LOG_ERR("can_start failed for can1: %d");
         return;
@@ -75,8 +75,8 @@ int CANTask_emit_test_can2_tx(struct CANTask *task)
  */
 int CANTask_operate_test_can1_tx(struct CANTask *task)
 {
-    uint8_t tx_length = sys_rand32_get() >> 29;
-    uint32_t id = sys_rand32_get() >> 29;
+    uint16_t tx_length = sys_rand32_get() >> 29;
+    uint32_t id = sys_rand32_get() >> 28;
 
     struct can_frame frame =
     {
@@ -95,8 +95,8 @@ int CANTask_operate_test_can1_tx(struct CANTask *task)
 
 int CANTask_operate_test_can2_tx(struct CANTask *task)
 {
-    uint8_t tx_length = sys_rand32_get() >> 29;
-    uint32_t id = sys_rand32_get() >> 29;
+    uint16_t tx_length = sys_rand32_get() >> 29;
+    uint32_t id = sys_rand32_get() >> 28;
 
     struct can_frame frame =
     {
@@ -119,8 +119,6 @@ void CANTask_thread(struct CANTask *task, void *p2, void *p3)
 
     struct AppTask *appTask = (struct AppTask *)task;
 
-    int ret;
-
     const struct can_filter filter = {
         .flags = CAN_FILTER_DISABLE,
     };
@@ -130,8 +128,8 @@ void CANTask_thread(struct CANTask *task, void *p2, void *p3)
     can_add_rx_filter_msgq(task->can2, &can2q, &filter);
     can_add_rx_filter_msgq(task->can1, &can1q, &filter);
 
-    task->ch1_rx = malloc(sizeof(struct ll_obj));
-    task->ch2_rx = malloc(sizeof(struct ll_obj));
+    task->ch1_rx = NULL;
+    task->ch2_rx = NULL;
 
     ll_obj_init(task->ch1_rx);
     ll_obj_init(task->ch2_rx);
@@ -143,16 +141,22 @@ void CANTask_thread(struct CANTask *task, void *p2, void *p3)
 
         if (ret == 0)
         {
-            uint8_t ch2_data = *frame_can2.data;
-            ll_obj_push(task->ch2_rx, ch2_data);
+            task->ch2_rx = bst_node_insert(task->ch2_rx, frame_can2.id, *frame_can2.data);
+            bst_node_search(task->ch2_rx, frame_can2.id);
+            struct bst_node *ch2_search = bst_node_search(task->ch2_rx, frame_can2.id);
+            LOG_INF("ID STATE: %d", ch2_search->key);
+            ll_print(ch2_search->data->head);
         }
 
         ret = k_msgq_get(&can1q, &frame_can1, K_NO_WAIT);
 
         if (ret == 0)
         {
-            uint8_t ch1_data = *frame_can1.data;
-            ll_obj_push(task->ch1_rx, ch1_data);
+            task->ch1_rx = bst_node_insert(task->ch1_rx, frame_can1.id, *frame_can1.data);
+            bst_node_search(task->ch1_rx, frame_can1.id);
+            struct bst_node *ch1_search = bst_node_search(task->ch1_rx, frame_can1.id);
+            LOG_INF("ID STATE: %d", ch1_search->key);
+            ll_print(ch1_search->data->head);
         }
 
         int event = k_event_wait(&appTask->events, 0b111111U, false, K_NO_WAIT);

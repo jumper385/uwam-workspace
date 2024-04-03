@@ -14,13 +14,14 @@
 
 #include "appTask.h"
 #include "../helpers/ll.h"
+#include "../helpers/bst.h"
 
 struct CANTask
 {
     struct AppTask super;
     struct device *can1, *can2;
     struct can_frame tx_frame;
-    struct ll_obj *ch1_rx, *ch2_rx; 
+    struct bst_node *ch1_rx, *ch2_rx; 
 };
 
 void CANTask_init(struct CANTask *task);
