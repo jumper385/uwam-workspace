@@ -13,14 +13,14 @@
 #include <zephyr/crypto/crypto.h>
 
 #include "appTask.h"
-#include "../helpers/can_probe.h"
+#include "../helpers/ll.h"
 
 struct CANTask
 {
     struct AppTask super;
     struct device *can1, *can2;
     struct can_frame tx_frame;
-    struct CANTask_rx_probe can1_probe, can2_probe;
+    struct ll_obj *ch1_rx, *ch2_rx; 
 };
 
 void CANTask_init(struct CANTask *task);

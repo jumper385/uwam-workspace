@@ -1,5 +1,7 @@
 #include <zephyr/kernel.h>
+#include <zephyr/shell/shell.h>
 #include "./tasks/canTask.h"
+#include "zephyr/logging/log.h"
 LOG_MODULE_REGISTER(main);
 
 // Setup Blinky...
@@ -60,15 +62,15 @@ int main(void)
 
 	// Setup Timers
 	k_timer_start(&test_can_timer, K_NO_WAIT, K_MSEC(250));
-	k_timer_start(&red_led_timer, K_NO_WAIT, K_MSEC(325));
-	k_timer_start(&green_led_timer, K_NO_WAIT, K_MSEC(350));
-	k_timer_start(&blue_led_timer, K_NO_WAIT, K_MSEC(300));
+//	k_timer_start(&red_led_timer, K_NO_WAIT, K_MSEC(325));
+//	k_timer_start(&green_led_timer, K_NO_WAIT, K_MSEC(350));
+//	k_timer_start(&blue_led_timer, K_NO_WAIT, K_MSEC(300));
 
 	// Do the Blinky...
-	gpio_pin_configure_dt(&led0, GPIO_OUTPUT_ACTIVE);
-	gpio_pin_configure_dt(&rgb_red, GPIO_OUTPUT_ACTIVE);
-	gpio_pin_configure_dt(&rgb_green, GPIO_OUTPUT_ACTIVE);
-	gpio_pin_configure_dt(&rgb_blue, GPIO_OUTPUT_ACTIVE);
+	gpio_pin_configure_dt(&led0, GPIO_OUTPUT_INACTIVE);
+	gpio_pin_configure_dt(&rgb_red, GPIO_OUTPUT_INACTIVE);
+	gpio_pin_configure_dt(&rgb_green, GPIO_OUTPUT_INACTIVE);
+	gpio_pin_configure_dt(&rgb_blue, GPIO_OUTPUT_INACTIVE);
 
 	while (1)
 	{

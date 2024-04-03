@@ -1,5 +1,7 @@
-#include "canTask.h"
 #include <zephyr/random/rand32.h>
+#include <zephyr/shell/shell.h>
+
+#include "canTask.h"
 
 LOG_MODULE_REGISTER(can);
 CAN_MSGQ_DEFINE(can1q, 2);
@@ -77,10 +79,10 @@ int CANTask_operate_test_can1_tx(struct CANTask *task)
     uint32_t id = sys_rand32_get() >> 29;
 
     struct can_frame frame =
-        {
-            .id = id,
-            .dlc = tx_length,
-        };
+    {
+        .id = id,
+        .dlc = tx_length,
+    };
 
     for (int i = 0; i < tx_length; i++)
     {
@@ -97,10 +99,10 @@ int CANTask_operate_test_can2_tx(struct CANTask *task)
     uint32_t id = sys_rand32_get() >> 29;
 
     struct can_frame frame =
-        {
-            .id = id,
-            .dlc = tx_length,
-        };
+    {
+        .id = id,
+        .dlc = tx_length,
+    };
 
     for (int i = 0; i < tx_length; i++)
     {
@@ -114,8 +116,8 @@ int CANTask_operate_test_can2_tx(struct CANTask *task)
 // Thread Definition
 void CANTask_thread(struct CANTask *task, void *p2, void *p3)
 {
+
     struct AppTask *appTask = (struct AppTask *)task;
-    int event = k_event_wait(&appTask->events, 0b111U, false, K_NO_WAIT);
 
     int ret;
 
@@ -128,35 +130,32 @@ void CANTask_thread(struct CANTask *task, void *p2, void *p3)
     can_add_rx_filter_msgq(task->can2, &can2q, &filter);
     can_add_rx_filter_msgq(task->can1, &can1q, &filter);
 
+    task->ch1_rx = malloc(sizeof(struct ll_obj));
+    task->ch2_rx = malloc(sizeof(struct ll_obj));
+
+    ll_obj_init(task->ch1_rx);
+    ll_obj_init(task->ch2_rx);
+
     for (;;)
     {
-
         int ret;
         ret = k_msgq_get(&can2q, &frame_can2, K_NO_WAIT);
 
         if (ret == 0)
         {
-            int err = CANTask_probe_update_state(&task->can2_probe, &frame_can2);
-
-            if (err == -CANPROBE_MAX_ID_REACHED)
-            {
-                LOG_ERR("CAN2_PROBE FULL (Only %d IDs Allowed)", MAX_IDS);
-            }
+            uint8_t ch2_data = *frame_can2.data;
+            ll_obj_push(task->ch2_rx, ch2_data);
         }
 
         ret = k_msgq_get(&can1q, &frame_can1, K_NO_WAIT);
 
         if (ret == 0)
         {
-            int err = CANTask_probe_update_state(&task->can1_probe, &frame_can1);
-
-            if (err == -CANPROBE_MAX_ID_REACHED)
-            {
-                LOG_ERR("CAN1_PROBE FULL (Only %d IDs Allowed)", MAX_IDS);
-            }
+            uint8_t ch1_data = *frame_can1.data;
+            ll_obj_push(task->ch1_rx, ch1_data);
         }
 
-        int event = k_event_wait(&appTask->events, 0b111U, false, K_NO_WAIT);
+        int event = k_event_wait(&appTask->events, 0b111111U, false, K_NO_WAIT);
 
         if ((0b1U == (0b1u & event)) != 0U)
         {
