@@ -1,0 +1,42 @@
+/ {
+
+    leds {
+        en_ch1: en_ch1 {
+            gpios = <&gpioa 0 GPIO_ACTIVE_HIGH>;
+            label = "Enable CH1 Output";
+        };
+
+        en_ch2: en_ch2 {
+            gpios = <&gpioa 1 GPIO_ACTIVE_HIGH>;
+            label = "Enable CH2 Output";
+        };
+
+        en_ch3: en_ch3 {
+            gpios = <&gpioa 2 GPIO_ACTIVE_HIGH>;
+            label = "Enable CH3 Output";
+        };
+    };
+
+    button {
+        fuse1: fuse1 {
+            gpios = <&gpioc 0 GPIO_ACTIVE_LOW>;
+            label = "OUTPUT CH1 Fuse";
+        };
+
+        fuse2: fuse2 {
+            gpios = <&gpioc 1 GPIO_ACTIVE_LOW>;
+            label = "OUTPUT CH2 Fuse";
+        };
+
+        fuse3: fuse3 {
+            gpios = <&gpioc 2 GPIO_ACTIVE_LOW>;
+            label = "OUTPUT CH3 Fuse";
+        };
+
+        fuse4: fuse4 {
+            gpios = <&gpioc 3 GPIO_ACTIVE_LOW>;
+            label = "OUTPUT CH4 Fuse";
+        };
+    };
+
+};
